@@ -1,32 +1,9 @@
-import { useState, useEffect } from "react";
-
-/**
- * 本地存储 Hook
- * @param key 存储键
- * @param initialValue 初始值
- * @returns [值, 设置函数]
- */
-export function useLocalStorage<T>(
-  key: string,
-  initialValue: T
-): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
+import { useState } from "react";
+export function useLocalStorage<T>(key: string, init: T): [T, (v: T) => void] {
+  const [val, setVal] = useState<T>(() => {
+    try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : init; }
+    catch { return init; }
   });
-
-  const setValue = (value: T) => {
-    try {
-      setStoredValue(value);
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return [storedValue, setValue];
+  const set = (v: T) => { setVal(v); localStorage.setItem(key, JSON.stringify(v)); };
+  return [val, set];
 }
